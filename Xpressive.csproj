@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{8CF0A870-07A7-4ADF-869F-DC2040D00BF1}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="xmpp.caps.js">
+      <DependentUpon>xmpp.caps.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.caps.min.js">
+      <DependentUpon>xmpp.caps.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatsession.js">
+      <DependentUpon>xmpp.chatsession.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatsession.min.js">
+      <DependentUpon>xmpp.chatsession.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.js">
+      <DependentUpon>xmpp.muc.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.min.js">
+      <DependentUpon>xmpp.muc.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.occupant.js">
+      <DependentUpon>xmpp.muc.occupant.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.occupant.min.js">
+      <DependentUpon>xmpp.muc.occupant.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.room.js.map">
+      <DependentUpon>xmpp.muc.room.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chat.js.map">
+      <DependentUpon>xmpp.chat.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatstates.js.map">
+      <DependentUpon>xmpp.chatstates.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.disco.js.map">
+      <DependentUpon>xmpp.disco.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.capabilities.js.map">
+      <DependentUpon>xmpp.muc.capabilities.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.js.map">
+      <DependentUpon>xmpp.muc.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.server.js.map">
+      <DependentUpon>xmpp.muc.server.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.servers.js.map">
+      <DependentUpon>xmpp.muc.servers.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.contact.js">
+      <DependentUpon>xmpp.roster.contact.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.contact.min.js">
+      <DependentUpon>xmpp.roster.contact.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.js.map">
+      <DependentUpon>xmpp.roster.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatsession.js.map">
+      <DependentUpon>xmpp.chatsession.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.muc.server.ts" />
+    <TypeScriptCompile Include="xmpp.muc.servers.ts" />
+    <Content Include="xmpp.muc.server.js">
+      <DependentUpon>xmpp.muc.server.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.server.min.js">
+      <DependentUpon>xmpp.muc.server.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.servers.js">
+      <DependentUpon>xmpp.muc.servers.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.servers.min.js">
+      <DependentUpon>xmpp.muc.servers.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.roster.contact.ts" />
+    <Content Include="xmpp.session.js.map">
+      <DependentUpon>xmpp.session.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.caps.js.map">
+      <DependentUpon>xmpp.caps.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.caps.ts" />
+    <TypeScriptCompile Include="xmpp.muc.ts" />
+    <TypeScriptCompile Include="xmpp.chatsession.ts" />
+    <Content Include="xmpp.util.js.map">
+      <DependentUpon>xmpp.util.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.xdata.js.map">
+      <DependentUpon>xmpp.xdata.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.chatstates.ts" />
+    <Content Include="xmpp.chat.js">
+      <DependentUpon>xmpp.chat.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chat.min.js">
+      <DependentUpon>xmpp.chat.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatstates.js">
+      <DependentUpon>xmpp.chatstates.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.chatstates.min.js">
+      <DependentUpon>xmpp.chatstates.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.disco.js">
+      <DependentUpon>xmpp.disco.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.disco.min.js">
+      <DependentUpon>xmpp.disco.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.capabilities.js">
+      <DependentUpon>xmpp.muc.capabilities.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.capabilities.min.js">
+      <DependentUpon>xmpp.muc.capabilities.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.chat.ts" />
+    <TypeScriptCompile Include="xmpp.session.ts" />
+    <Content Include="xmpp.muc.room.js">
+      <DependentUpon>xmpp.muc.room.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.muc.room.min.js">
+      <DependentUpon>xmpp.muc.room.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.session.js">
+      <DependentUpon>xmpp.session.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.session.min.js">
+      <DependentUpon>xmpp.session.ts</DependentUpon>
+    </Content>
+    <TypeScriptCompile Include="xmpp.disco.ts" />
+    <TypeScriptCompile Include="xmpp.xdata.ts" />
+    <TypeScriptCompile Include="xmpp.muc.capabilities.ts" />
+    <Content Include="images\authenticate.png" />
+    <Content Include="images\away.png" />
+    <Content Include="images\chat.png" />
+    <Content Include="images\connect.png" />
+    <Content Include="images\disconnect.png" />
+    <Content Include="images\dnd.png" />
+    <Content Include="images\error.png" />
+    <Content Include="images\offline.png" />
+    <Content Include="images\online.png" />
+    <Content Include="images\xa.png" />
+    <Content Include="Scripts\ts\jquery-1.8.d.ts" />
+    <Content Include="Scripts\ts\jqueryui-1.9.d.ts" />
+    <Content Include="Scripts\ts\jstorage.d.ts" />
+    <Content Include="Scripts\ts\modernizr-2.6.d.ts" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.menu.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.spinner.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\jquery.ui.tooltip.css" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.menu.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.spinner.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
+    <Content Include="default.htm" />
+    <Content Include="Scripts\ts\underscore-1.4.d.ts" />
+    <Content Include="Scripts\underscore.js" />
+    <Content Include="Scripts\underscore.min.js" />
+    <Content Include="xmpp.me.js.map">
+      <DependentUpon>xmpp.me.ts</DependentUpon>
+    </Content>
+    <Content Include="web.config" />
+    <TypeScriptCompile Include="xmpp.muc.occupant.ts" />
+    <TypeScriptCompile Include="xmpp.muc.room.ts" />
+    <Content Include="xmpp.xdata.js">
+      <DependentUpon>xmpp.xdata.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.xdata.min.js">
+      <DependentUpon>xmpp.xdata.ts</DependentUpon>
+    </Content>
+    <Content Include="xpressive.ui.events.js" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <TypeScriptCompile Include="xmpp.me.ts" />
+    <Content Include="xmpp.me.js">
+      <DependentUpon>xmpp.me.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.me.min.js">
+      <DependentUpon>xmpp.me.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.js">
+      <DependentUpon>xmpp.roster.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.min.js">
+      <DependentUpon>xmpp.roster.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.roster.ts" />
+    <Content Include="xmpp.util.js">
+      <DependentUpon>xmpp.util.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.util.min.js">
+      <DependentUpon>xmpp.util.ts</DependentUpon>
+    </Content>
+    <Content Include="xmpp.util.ts" />
+    <Content Include="xpressive.dialogs.js" />
+    <Content Include="xpressive.events.js" />
+    <Content Include="xpressive.js">
+      <DependentUpon>xpressive.ts</DependentUpon>
+    </Content>
+    <Content Include="Scripts\checkplayer.js" />
+    <Content Include="Scripts\flensed.js" />
+    <Content Include="Scripts\flXHR.js" />
+    <Content Include="Scripts\flXHR.swf" />
+    <Content Include="Scripts\flXHR.vbs" />
+    <Content Include="Scripts\jquery-ui-1.9.2.js" />
+    <Content Include="Scripts\jquery-ui-1.9.2.min.js" />
+    <Content Include="Scripts\jquery.ba-dotimeout.js" />
+    <Content Include="Scripts\jquery.scrollabletab.js" />
+    <Content Include="Scripts\json2.js" />
+    <Content Include="Scripts\jstorage.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\strophe\base64.js" />
+    <Content Include="Scripts\strophe\bosh.js" />
+    <Content Include="Scripts\strophe\core.js" />
+    <Content Include="Scripts\strophe\md5.js" />
+    <Content Include="Scripts\strophe\sha1.js" />
+    <Content Include="Scripts\strophe\websocket.js" />
+    <Content Include="Scripts\swfobject.js" />
+    <Content Include="Scripts\updateplayer.swf" />
+    <Content Include="xpressive.min.js">
+      <DependentUpon>xpressive.ts</DependentUpon>
+    </Content>
+    <Content Include="xpressive.ui.css" />
+    <None Include="Scripts\jquery-1.8.3.intellisense.js" />
+    <Content Include="Scripts\jquery-1.8.3.js" />
+    <Content Include="Scripts\jquery-1.8.3.min.js" />
+    <Content Include="packages.config" />
+    <Content Include="xpressive.js.map">
+      <DependentUpon>xpressive.ts</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="xpressive.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Xpressive</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:37804/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptSourceMap> --sourcemap</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Target Name="BeforeBuild">
+    <Message Text="Compiling TypeScript files" />
+    <Message Text="Executing tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />
+    <Exec Command="tsc$(TypeScriptSourceMap) @(TypeScriptCompile ->'&quot;%(fullpath)&quot;', ' ')" />
+  </Target>
+</Project>

@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Xpressive.js XMPP Client</title>
+
+    <link rel='stylesheet' href='xpressive.ui.css' />
+    <link rel="stylesheet" href="Content/themes/base/jquery-ui.css" />
+
+    <script type="text/javascript" src='scripts/json2.js'></script>
+    <script type="text/javascript" src='scripts/jquery-1.8.3.js'></script>
+    <script type="text/javascript" src='scripts/jquery-ui-1.9.2.js'></script>
+    <script type="text/javascript" src='scripts/jquery.ba-dotimeout.js'></script>
+    <script type="text/javascript" src='scripts/jstorage.js'></script>
+    <script type="text/javascript" src="Scripts/underscore.js"></script>
+    <script type="text/javascript" src='scripts/flXHR.js'></script>
+
+    <script type="text/javascript" src='scripts/strophe/md5.js'></script>
+    <script type="text/javascript" src='scripts/strophe/base64.js'></script>
+    <script type="text/javascript" src='scripts/strophe/sha1.js'></script>
+    <script type="text/javascript" src='scripts/strophe/core.js'></script>
+    <script type="text/javascript" src='scripts/strophe/bosh.js'></script>
+    <script type="text/javascript" src='scripts/strophe/websocket.js'></script>
+
+    <script type="text/javascript" src='scripts/strophe.flxhr.js'></script>
+
+    <script type="text/javascript" src='xpressive.dialogs.js'></script>
+    <script type="text/javascript" src='xpressive.js'></script>
+
+    <script type="text/javascript" src='xmpp.me.js'></script>
+    <script type="text/javascript" src='xmpp.muc.capabilities.js'></script>
+    <script type="text/javascript" src='xmpp.muc.occupant.js'></script>
+    <script type="text/javascript" src='xmpp.muc.room.js'></script>
+    <script type="text/javascript" src='xmpp.muc.server.js'></script>
+    <script type="text/javascript" src='xmpp.muc.servers.js'></script>
+    <script type="text/javascript" src='xmpp.muc.js'></script>
+    <script type="text/javascript" src='xmpp.roster.contact.js'></script>
+    <script type="text/javascript" src='xmpp.roster.js'></script>
+    <script type="text/javascript" src='xmpp.session.js'></script>
+    <script type="text/javascript" src='xmpp.xdata.js'></script>
+    <script type="text/javascript" src='xmpp.util.js'></script>
+    <script type="text/javascript" src='xmpp.chatstates.js'></script>
+    <script type="text/javascript" src='xmpp.chat.js'></script>
+    <script type="text/javascript" src='xmpp.chatsession.js'></script>
+    <script type="text/javascript" src='xmpp.disco.js'></script>
+    <script type="text/javascript" src='xmpp.caps.js'></script>
+
+    <script type="text/javascript" src='xpressive.events.js'></script>
+    <script type="text/javascript" src='xpressive.ui.events.js'></script>
+</head>
+<body>
+    <div id="client" class='ui-widget-content'>
+        <h1 id="title" class='ui-widget-header'>Xpressive XMPP Client</h1>
+        <div id="content" class='table ui-widget-content'>
+            <div class="row" id="button-row">
+                <div id='my-status' class='disconnected my-status'>
+                    <div class='tooltip'>Disconnected</div>
+                    <span id='icon'></span>
+                </div>
+                <span id='my-nickname' class='my-status'></span>
+                <span id='my-jid' class='my-status'></span>
+                <div id='toolbar'>
+                    <span class='button' id='away-pres'>Away</span>&nbsp; 
+						<span class='button' id='available-pres'>Available</span>&nbsp; 
+						<span class='button' id='settings'>Settings</span>
+                    <span class='button' id='disconnect'>Disconnect</span>
+                </div>
+            </div>
+            <div id='chat-region' class="row">
+                <!-- Xmpp Roster area -->
+                <div id='roster-area' class='ui-corner-all ui-widget-content ui-resize'>
+                    <h3 class='ui-widget-header ui-corner-all ui-list'>Roster</h3>
+                    <div style='display: inline-block'>
+                        <img class='ui-icon ui-icon-circle-plus xmpp-add-contact' style='display: inline-block; vertical-align: bottom;' />
+                        <div class='tooltip'>Add Contact.</div>
+                        &nbsp;<img class='ui-icon ui-icon-comment xmpp-chat-to-dlg' style='display: inline-block; vertical-align: bottom;' />
+                        <div class='tooltip'>Chat with...</div>
+                    </div>
+                    &nbsp;&nbsp;<input type='text' id='filter' />
+                    <ul class='contact-details'></ul>
+                </div>
+
+                <!-- Muc area -->
+                <div id='muc-area' class='ui-corner-all ui-widget-content ui-resize hidden'>
+                    <h3 class='ui-widget-header ui-corner-all ui-list'>Chat Rooms</h3>
+                    <div style='display: inline-block'>
+                        <img class='ui-icon ui-icon-home xmpp-new-room' style='display: inline-block; vertical-align: bottom;' />
+                        <div class='tooltip'>Create New Room.</div>
+                    </div>
+                    <ul class='room-details'></ul>
+                </div>
+                <div class='vertical-divider ui-resize'><span>|</span></div>
+                <!-- chat tabs region (includes a debug/console tab)-->
+                <div id='chat-area' class='tabs ui-resize'>
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO: form dialog-->
+    <div id='form_dialog' class='hidden'>
+        Form goes here.
+    </div>
+
+    <!-- TODO: room details dialog-->
+    <div id='roomDetails_dialog' class='hidden'>
+        Details go here.
+    </div>
+
+    <!-- TODO: create room dialog-->
+    <div id='createRoom_dialog' class='hidden'>
+        <label>Name for New Room:</label>
+        <br />
+        <input type='text' id='newroom-name' />
+        <br />
+        <label>Enter a nickname:</label>
+        <br />
+        <input type='text' id='newroom-nickname' />
+    </div>
+
+    <!-- TODO: settings dialog-->
+    <div id='settings_dialog' class='hidden'>
+        <label for='settings-server'>Server: (required)</label>
+        <br />
+        <input type='text' id='settings-server' />
+        <br />
+        <label for='settings-port'>Port: (default=5280)</label>
+        <br />
+        <input type='text' id='settings-port' />
+        <br />
+        <label for='settings-resource'>Resource: (default=xmpp-httpbind)</label>
+        <br />
+        <input type='text' id='settings-resource' />
+        <br />
+        <label for='settings-nickname'>Your Default Nickname:</label>
+        <br />
+        <input type='text' id='settings-nickname' />
+    </div>
+
+    <!-- TODO: message dialog -->
+    <div id='message_dialog' class='hidden'>
+        <!--TODO: Need to add the ability to reply -->
+        <div>
+            <b>You have recived a message from:</b><br />
+            <span id='message-from' />
+        </div>
+        <div>
+            <b>Subject:</b><br />
+            <span id='message-subject' />
+        </div>
+        <div>
+            <b>Message:</b><br />
+            <span id='message-text' />
+        </div>
+        <div id="message-reply-div" class="hidden">
+            <label for='message-reply'>Your reply:</label>
+            <br />
+            <input type='text' id='message-reply' />
+        </div>
+    </div>
+
+    <!-- TODO: login dialog -->
+    <div id='login_dialog' class='hidden'>
+        <label for='login-jid'>JID:</label>
+        <br />
+        <input type='text' id='login-jid' />
+        <br />
+        <label for='login-password'>Password:</label>
+        <br />
+        <input type='password' id='login-password' />
+        <div class='hidden'>
+            <label for='login-resource'>Resource:</label>
+            <br />
+            <input type='text' id='login-resource' />
+        </div>
+    </div>
+
+    <!-- TODO: destroyRoom dialog -->
+    <div id='destroyRoom_dialog' class='hidden'>
+        <label id='destroyRoom-message'>MESSAGE</label>
+        <br />
+        <span>The following information is optional...</span>
+        <br />
+        <label for='destroyRoom-reason'>Reason:</label>
+        <br />
+        <input type='text' id='destroyRoom-reason' />
+        <br />
+        <label for='destroyRoom-altJid'>Alternative room:</label>
+        <br />
+        <input type='text' id='destroyRoom-altJid' />
+        <br />
+        <label for='destroyRoom-password'>...and password (if required):</label>
+        <br />
+        <input type='text' id='destroyRoom-password' />
+    </div>
+
+    <!-- TODO: confirmation dialog -->
+    <div id='confirmation_dialog' class='hidden'>
+        <label id='confirmation-message'>MESSAGE</label>
+        <div id='confirmation-reason-div'>
+            <br />
+            <label for='confirmation-reason'>Reason:</label>
+            <br />
+            <input type='text' id='confirmation-reason' />
+        </div>
+    </div>
+
+    <!-- TODO: contact dialog -->
+    <div id='contact_dialog' class='hidden'>
+        <label for='contact-jid'>JID:</label>
+        <br />
+        <input type='text' id='contact-jid' />
+        <br />
+        <label for='contact-name'>Name:</label>
+        <br />
+        <input type='text' id='contact-name' />
+        <br />
+        <label for='contact-groups' id='group-label'>Groups:</label>
+        <br />
+        <input type='text' id='contact-groups' />
+    </div>
+
+    <!-- TODO: chat dialog -->
+    <div id='chat_dialog' class='hidden'>
+        <label>JID:</label>
+        <br />
+        <input type='text' id='chat-jid' />
+    </div>
+
+    <!-- TODO: join room dialog -->
+    <div id='joinRoom_dialog' class='hidden'>
+        <label>Room:</label><span id='room-name'></span>
+        <br />
+        <label>Enter a nickname:</label>
+        <br />
+        <input type='text' id='room-nickname' />
+        <div id='room-password-div'>
+            <label>A password is required:</label>
+            <br />
+            <input type='password' id='room-password' />
+        </div>
+    </div>
+
+    <!-- TODO: approval dialog -->
+    <div id='approve_dialog' class='hidden'>
+        <p>
+            <span id='approve-jid'></span>has requested a subscription
+				to your presence.<br />
+            Approve or deny?
+        </p>
+    </div>
+
+    <!-- TODO: status dialog -->
+    <div id='status_dialog' class='hidden'>
+        <label>Change your status: </label>
+        <br />
+        <br />
+        <div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='available' /></span>&nbsp;<span>Available</span>
+            </div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='away' /></span>&nbsp;<span>Away</span>
+            </div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='xa' /></span>&nbsp;<span>Extended Away</span>
+            </div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='chat' /></span>&nbsp;<span>Chatting</span>
+            </div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='dnd' /></span>&nbsp;<span>Do Not Disturb</span>
+            </div>
+            <div>
+                <span>
+                    <input type='radio' name='status' value='unavailable' /></span>&nbsp;<span>Unavailable/Offline</span>
+            </div>
+        </div>
+        <br />
+        <label>Additional information:</label>
+        <br />
+        <select id='status_info'>
+            <option></option>
+            <option>Out to lunch</option>
+            <option>Out of the office</option>
+            <option>In a meeting</option>
+            <option>On leave</option>
+        </select>
+    </div>
+</body>
+</html>
