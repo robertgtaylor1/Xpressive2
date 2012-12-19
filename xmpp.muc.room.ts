@@ -11,7 +11,7 @@ interface IRoom {
     myAffiliation: string;
     myRole: string;
     canModifySubject(): bool;
-    getInfo();
+    getInfo(): void;
     description(): string;
     numberOfOccupants(): number;
     rejoin(): void;
@@ -58,7 +58,7 @@ module Xmpp {
         private chatSession = null;
 
         // Constructor
-        constructor (jid, name, conn) {
+        constructor(jid, name, conn) {
             this.jid = Strophe.getBareJidFromJid(jid);
             this.myNickname = "";
             this.myAffiliation = "none";
@@ -210,7 +210,7 @@ module Xmpp {
 
         incomingMucMessage(message) {
             Strophe.info("got message for room: " + this.jid);
-            var messageTime : Date;
+            var messageTime: Date;
 
             var delay = $(message).find('delay');
             if (delay.length === 0) {

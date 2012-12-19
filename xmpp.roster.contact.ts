@@ -20,6 +20,7 @@ interface IContact {
 }
 
 interface IContacts {
+    init(): void;
     list: IContact[];
     rosterChanged(iq: any): bool;
     presenceChanged(pres: any): bool;
@@ -78,7 +79,7 @@ module Xmpp {
         }
 
         // Constructor
-        constructor (item: any, jid?: string) {
+        constructor(item: any, jid?: string) {
             if (!item) {
                 this._jid = jid;
                 this._item = item;
@@ -192,13 +193,21 @@ module Xmpp {
     }
 
     export class Contacts implements IContacts {
-    
+
         private conn: any;
+        private xpressive: IXpressive;
         public list: IContact[];
 
-        constructor (connection: any) {
+        constructor(connection: any, xpressive: IXpressive) {
             this.conn = connection;
+            this.xpressive = xpressive;
             this.list = [];
+        }
+
+        init() {
+            // set up handlers for updates
+            this.conn.addHandler(this.rosterChanged.bind(this), Strophe.NS.ROSTER, "iq", "set");
+            this.conn.addHandler(this.presenceChanged.bind(this), null, "presence");
         }
 
         // called when roster udpates are received
@@ -251,6 +260,8 @@ module Xmpp {
 
         // called when presence stanzas are received
         presenceChanged(presence) {
+            var caps = null;
+            var capsNode: any;
             var from = $(presence).attr("from");
             var jid = Strophe.getBareJidFromJid(from);
 
@@ -309,15 +320,26 @@ module Xmpp {
                         var time = stamp === undefined ? new Date() : new Date(stamp);
 
                         contact.resources[resource] = {
-                            show: $(presence).find("show").text() || "online",
-                            status: $(presence).find("status").text(),
-                            timestamp: time
+                            "show": $(presence).find("show").text() || "online",
+                            "status": $(presence).find("status").text(),
+                            "timestamp": time,
+                            "presence": presence
                         };
+                        var caps = $(presence).find("c");
+                        if (caps.length > 0) {
+                            var node = caps.attr("node");
+                            var ver = caps.attr("ver");
+                            capsNode = node + "#" + ver;
+                            caps = this.xpressive.Caps.findCaps(capsNode);
+                        }
                     }
                 }
-
                 // notify user code of roster changes
                 $(document).trigger("presence_changed", contact);
+            }
+
+            if (!caps) {
+                this.xpressive.Caps.getCaps(from, capsNode);
             }
             return true;
         }

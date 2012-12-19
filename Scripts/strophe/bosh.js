@@ -325,7 +325,7 @@ Strophe.Bosh.prototype = {
 
         // request complete
         var reqStatus;
-        if (req.xhr.readyState == 4) {
+        if (req.xhr.readyState === 4) {
             reqStatus = 0;
             try {
                 reqStatus = req.xhr.status;
@@ -412,7 +412,7 @@ Strophe.Bosh.prototype = {
         var reqStatus = -1;
 
         try {
-            if (req.xhr.readyState == 4) {
+            if (req.xhr.readyState === 4) {
                 reqStatus = req.xhr.status;
             }
         } catch (e) {
@@ -435,7 +435,7 @@ Strophe.Bosh.prototype = {
                               time_elapsed > Math.floor(Strophe.TIMEOUT * this.wait));
         var secondaryTimeout = (req.dead !== null &&
                                 req.timeDead() > Math.floor(Strophe.SECONDARY_TIMEOUT * this.wait));
-        var requestCompletedWithServerError = (req.xhr.readyState == 4 &&
+        var requestCompletedWithServerError = (req.xhr.readyState === 4 &&
                                                (reqStatus < 1 ||
                                                 reqStatus >= 500));
         if (primaryTimeout || secondaryTimeout ||

@@ -2395,6 +2395,7 @@ Strophe.Connection.prototype = {
                     }
                 } catch(e) {
                     //if the handler throws an exception, we consider it as false
+                    Strophe.error("handler threw exception.");
                 }
             }
         });

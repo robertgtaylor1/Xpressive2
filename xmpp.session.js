@@ -50,13 +50,6 @@ var Xmpp;
         };
         Session.prototype.statusChanged = function (status) {
             if(status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-                var discoInfo = $iq({
-                    type: 'get'
-                }).c('query', {
-                    xmlns: Strophe.NS.DISCO_INFO
-                });
-                Strophe.info("request info");
-                this.conn.sendIQ(discoInfo, this.onDiscoInfo.bind(this), this.onInfoError.bind(this));
             } else {
                 if(status === Strophe.Status.DISCONNECTED) {
                     this.discoInfo = [];
@@ -65,6 +58,15 @@ var Xmpp;
         };
         Session.prototype.disconnect = function () {
             this.conn.disconnect();
+        };
+        Session.prototype.sessionInit = function () {
+            var discoInfo = $iq({
+                type: 'get'
+            }).c('query', {
+                xmlns: Strophe.NS.DISCO_INFO
+            });
+            Strophe.info("request info");
+            this.conn.sendIQ(discoInfo, this.onDiscoInfo.bind(this), this.onInfoError.bind(this));
         };
         Session.prototype.unhandledIq = function (iq) {
             Strophe.info("Unhandled Iq");
@@ -83,6 +85,9 @@ Strophe.addConnectionPlugin('session', ((function () {
         statusChanged: function (status) {
             return _session.statusChanged(status);
         },
+        sessionInit: function () {
+            return _session.sessionInit();
+        },
         disconnect: function () {
             return _session.disconnect();
         },
@@ -91,4 +96,3 @@ Strophe.addConnectionPlugin('session', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.session.js.map

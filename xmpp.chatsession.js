@@ -50,4 +50,3 @@ var Xmpp;
     })();
     Xmpp.ChatSession = ChatSession;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.chatsession.js.map

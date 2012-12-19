@@ -86,10 +86,14 @@ var Xmpp;
             this._connection.sendIQ(items, success, error, timeout);
         };
         Disco.prototype.hasIdentities = function () {
-            return (this._identities.length === 0);
+            return (this._identities.length > 0);
         };
         Disco.prototype.getIdentity = function (index) {
-            return this._identities[index];
+            if(this._identities.length > 0) {
+                return this._identities[index];
+            } else {
+                return null;
+            }
         };
         Disco.prototype.getIdentities = function () {
             return this._identities;
@@ -214,4 +218,3 @@ Strophe.addConnectionPlugin('disco', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.disco.js.map

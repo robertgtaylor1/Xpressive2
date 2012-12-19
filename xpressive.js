@@ -5,6 +5,12 @@ var Xmpp;
             this.strophe = strophe;
             this.settings = null;
         }
+        Xpressive.prototype.init = function (connection) {
+            this.connection = connection;
+        };
+        Xpressive.prototype.startSession = function () {
+            this.Session.sessionInit();
+        };
         Object.defineProperty(Xpressive.prototype, "Session", {
             get: function () {
                 return this.connection.session;
@@ -43,6 +49,20 @@ var Xmpp;
         Object.defineProperty(Xpressive.prototype, "Chatstates", {
             get: function () {
                 return this.connection.chatstates;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Xpressive.prototype, "Disco", {
+            get: function () {
+                return this.connection.disco;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Xpressive.prototype, "Caps", {
+            get: function () {
+                return this.connection.caps;
             },
             enumerable: true,
             configurable: true
@@ -414,7 +434,7 @@ var Xmpp;
                     var hdrHtml = "<div class='groupchat-header'>" + "<div><span id='topic-label'>Topic : <input type='text' class='chat-topic' /></span></div>" + "<div><span id='affil-label'>Affiliation : </span><span id='affil-value' class='capitalize'>" + room.myAffiliation + "</span>" + "<span id='affil-img'>&nbsp;<img class='ui-icon ui-icon-play xmpp-affil-actions' " + "style='display:inline-block; vertical-align:bottom;'/>" + "<div id='affil-tooltip' class='tooltip capitalize'>Affiliation Actions.</div></span>" + "<span id='role-label'>  Role : </span><span id='role-value' class='capitalize'>" + room.myRole + "</span>" + "<span id='role-img'>&nbsp;<img class='ui-icon ui-icon-play xmpp-role-actions' " + "style='display:inline-block; vertical-align:bottom;'/>" + "<div id='role-tooltip' class='tooltip capitalize'>Role Actions.</div></span>" + "<span id='invite-label'>Invite</span>" + "<span id='invite-img'>&nbsp;<img class='ui-icon ui-icon-play xmpp-invite-actions' " + "style='display:inline-block; vertical-align:bottom;'/>" + "<div id='invite-tooltip' class='tooltip capitalize'>Invite someone to join.</div></span>" + "</div>" + "</div>";
                     $(chatTab).append(hdrHtml);
                 }
-                $(chatTab).append("<div class='chat-messages' ></div>" + "<input type='text' class='chat-input'/>");
+                $(chatTab).append("<div class='chat-messages' ></div>" + "<div class='chat-event' ></div>" + "<input type='text' class='chat-input'/>");
                 $(chatTab).data('jid', jid);
                 $(chatTab).data('name', name);
                 $(chatTab).data('resource', resource);
@@ -494,9 +514,25 @@ var Xmpp;
                 }
                 $('#chat-area').tabs('select', chatTab);
                 $(chatTab + ' input').focus();
-                composing = $(message).find('composing');
-                if(composing.length > 0) {
-                    $(chatTab + ' .chat-messages').append("<div class='chat-event'>" + name + " is typing...</div>");
+                var chatState = Xmpp.Chatstates.checkForNotification($(message));
+                var chatStateMsg;
+                if(chatState) {
+                    if(chatState === "active") {
+                        $(chatTab + ' .chat-messages .chat-event').empty();
+                    } else {
+                        if(chatState === "composing") {
+                            chatStateMsg = "is typing...";
+                        } else {
+                            if(chatState === "paused") {
+                                chatStateMsg = "has paused.";
+                            } else {
+                                if(chatState === "gone") {
+                                    chatStateMsg = "has closed the chat window.";
+                                }
+                            }
+                        }
+                        $(chatTab + ' .chat-event').text(name + " " + chatStateMsg);
+                    }
                     this._scroll_chat(chatTab);
                 }
                 body = $(message).find("html > body");
@@ -511,7 +547,6 @@ var Xmpp;
                     messageText = body.text();
                 }
                 if(messageText) {
-                    $(chatTab + ' .chat-event').remove();
                     this._add_message(chatTab, messageSender, messageText, fromMe ? "me" : name, timestamp);
                 }
             }
@@ -667,6 +702,13 @@ var Xmpp;
 })(Xmpp || (Xmpp = {}));
 var Xpressive;
 Xpressive = new Xmpp.Xpressive(Strophe);
+Strophe.addConnectionPlugin('xpressive', ((function (xpressive) {
+    return {
+        init: function (connection) {
+            return xpressive.init(connection);
+        }
+    };
+})(Xpressive)));
 $(document).ready(function () {
     $("#chat-area").tabs({
         'animationSpeed': 50,

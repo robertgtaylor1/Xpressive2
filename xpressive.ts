@@ -1,3 +1,5 @@
+/// <reference path="xmpp.caps.ts" />
+/// <reference path="xmpp.disco.ts" />
 /// <reference path="xmpp.session.ts" />
 /// <reference path="xmpp.chat.ts" />
 /// <reference path="xmpp.chatstates.ts" />
@@ -16,6 +18,8 @@ declare var $iq: any;
 declare var $msg: any;
 
 interface IXpressive {
+    init(connection: any): void;
+    startSession(): void;
     sessionDisconnect(): void;
     getMyNickname(): string;
     endSession(jid: string): void;
@@ -41,6 +45,8 @@ interface IXpressive {
     Chat: IChat;
     Muc: IMuc;
     Roster: IRoster;
+    Disco: IDisco;
+    Caps: ICaps;
 
     do_presence_changed(contact: IContact): void;
     do_update_info(contact: IContact): void;
@@ -57,6 +63,14 @@ module Xmpp {
         private strophe: any;
         private settings: any;
         private connection: any;
+
+        init(connection) {
+            this.connection = connection;
+        }
+        
+        startSession() {
+            this.Session.sessionInit();
+        }
 
         get Session(): ISession {
             return this.connection.session;
@@ -82,7 +96,15 @@ module Xmpp {
             return this.connection.chatstates;
         }
 
-        constructor (strophe) {
+        get Disco(): IDisco {
+            return this.connection.disco;
+        }
+
+        get Caps(): ICaps {
+            return this.connection.caps;
+        }
+
+        constructor(strophe) {
             this.strophe = strophe;
             this.settings = null;
         }
@@ -195,7 +217,7 @@ module Xmpp {
                     this.settings[key] = value;
                 });
                 $.jStorage.set("Settings", this.settings);
-                //$.jStorage.flush();
+            //$.jStorage.flush();
             } catch (ex) { console.log(ex); }
 
         }
@@ -558,7 +580,9 @@ module Xmpp {
                                   "</div>";
                     $(chatTab).append(hdrHtml);
                 }
-                $(chatTab).append("<div class='chat-messages' ></div>" + "<input type='text' class='chat-input'/>");
+                $(chatTab).append("<div class='chat-messages' ></div>" +
+                    "<div class='chat-event' ></div>" +
+                    "<input type='text' class='chat-input'/>");
                 $(chatTab).data('jid', jid);
                 $(chatTab).data('name', name);
                 $(chatTab).data('resource', resource);
@@ -577,7 +601,7 @@ module Xmpp {
             $('#client').trigger('resize');
         }
 
-        on_join_room(jid, name, room? ) {
+        on_join_room(jid, name, room?) {
             this.on_start_chat(Strophe.getBareJidFromJid(jid), name, true, room);
         }
 
@@ -657,10 +681,21 @@ module Xmpp {
                 $('#chat-area').tabs('select', chatTab);
                 $(chatTab + ' input').focus();
 
-                composing = $(message).find('composing');
-                if (composing.length > 0) {
-                    $(chatTab + ' .chat-messages').append("<div class='chat-event'>" + name + " is typing...</div>");
-
+                var chatState = Chatstates.checkForNotification($(message));
+                var chatStateMsg;
+                if (chatState) {
+                    if (chatState === "active") {
+                        $(chatTab + ' .chat-messages .chat-event').empty();
+                    } else {
+                        if (chatState === "composing") {
+                            chatStateMsg = "is typing...";
+                        } else if (chatState === "paused") {
+                            chatStateMsg = "has paused.";
+                        } else if (chatState === "gone") {
+                            chatStateMsg = "has closed the chat window.";
+                        }
+                        $(chatTab + ' .chat-event').text(name + " " + chatStateMsg);
+                    }
                     this._scroll_chat(chatTab);
                 }
                 // TODO let's ignore HTML content for now
@@ -692,8 +727,6 @@ module Xmpp {
                 }
 
                 if (messageText) {
-                    // remove notifications since user is now active
-                    $(chatTab + ' .chat-event').remove();
                     this._add_message(chatTab, messageSender, messageText, fromMe ? "me" : name, timestamp);
                 }
             }
@@ -900,6 +933,12 @@ module Xmpp {
 var Xpressive: IXpressive;
 Xpressive = new Xmpp.Xpressive(Strophe);
 
+Strophe.addConnectionPlugin('xpressive', (function(xpressive) {
+    return {
+        init: (connection: any) => xpressive.init(connection)
+    }
+} (Xpressive)));
+
 $(document).ready(() => {
 
     $("#chat-area").tabs({//).scrollabletab({
@@ -915,22 +954,22 @@ $(document).ready(() => {
             $(elem).height(newH - 84);
         });
 
-        $('.chat-messages').each((index, elem) =>{
+        $('.chat-messages').each((index, elem) => {
             var groupChat = $(elem).parent().data('groupChat');
             $(elem).height(newH - 84 - (groupChat === true ? 118 : 70));
         });
 
-        $('.log-messages').each((index, elem) =>{
+        $('.log-messages').each((index, elem) => {
             $(elem).height(newH - 84 - 45);
         });
 
         var newW = $('#chat-area').width();
-        $('.chat-input').each((index, elem) =>{
+        $('.chat-input').each((index, elem) => {
             $(elem).width(newW - 10);
             $(elem).css({ top: '0px' });
         });
 
-        $('.chat-topic').each((index, elem) =>{
+        $('.chat-topic').each((index, elem) => {
             $(elem).width(newW - 80);
         });
 

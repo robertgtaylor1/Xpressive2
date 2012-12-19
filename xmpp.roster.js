@@ -1,22 +1,22 @@
 var Xmpp;
 (function (Xmpp) {
     var Roster = (function () {
-        function Roster() {
+        function Roster(Xpressive) {
             this.contacts = null;
+            this.xpressive = Xpressive;
         }
         Roster.prototype.init = function (connection) {
             Strophe.debug("init roster plugin");
             this.conn = connection;
-            this.contacts = new Xmpp.Contacts(connection);
+            this.contacts = new Xmpp.Contacts(connection, this.xpressive);
         };
         Roster.prototype.statusChanged = function (status) {
             var _this = this;
             try  {
                 var roster_iq, contact;
                 if(status === Strophe.Status.CONNECTED) {
-                    this.contacts = new Xmpp.Contacts(this.conn);
-                    this.conn.addHandler(this.contacts.rosterChanged.bind(this.contacts), Strophe.NS.ROSTER, "iq", "set");
-                    this.conn.addHandler(this.contacts.presenceChanged.bind(this.contacts), null, "presence");
+                    this.contacts = new Xmpp.Contacts(this.conn, this.xpressive);
+                    this.contacts.init();
                     roster_iq = $iq({
                         type: "get"
                     }).c('query', {
@@ -137,7 +137,7 @@ var Xmpp;
     Xmpp.Roster = Roster;    
 })(Xmpp || (Xmpp = {}));
 Strophe.addConnectionPlugin('roster', ((function () {
-    var _roster = new Xmpp.Roster();
+    var _roster = new Xmpp.Roster(Xpressive);
     return {
         init: function (connection) {
             return _roster.init(connection);
@@ -171,4 +171,3 @@ Strophe.addConnectionPlugin('roster', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.roster.js.map

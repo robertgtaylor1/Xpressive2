@@ -14,4 +14,3 @@ var Xmpp;
     })();
     Xmpp.Capabilities = Capabilities;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.muc.capabilities.js.map

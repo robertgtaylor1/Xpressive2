@@ -49,29 +49,26 @@ module Xmpp {
         private jid = "";
         private password = "";
         private xpressive: IXpressive;
-        private _this: Me;
 
         // Constructor
         constructor (xpressive: IXpressive) {
             this.xpressive = xpressive;
-            this._this = this;
         }
 
         init(connection) {
             Strophe.debug("init me plugin");
 
-            this._this.conn = connection;
-            this._this.conn.addHandler(this._onVersionIq.bind(this._this), Strophe.NS.VERSION, 'iq', 'get', null, null);
+            this.conn = connection;
+            connection.addHandler(this._onVersionIq.bind(this), Strophe.NS.VERSION, 'iq', 'get', null, null);
         }
 
         statusChanged(status) {
-            var that = this._this;
 
             switch (status) {
                 case Strophe.Status.CONNECTED:
                     this.jid = this.conn.jid;
                     this.setStatus("connected");
-                    that.conn.disco.addFeature(Strophe.NS.VERSION);
+                    this.xpressive.Disco.addFeature(Strophe.NS.VERSION);
                     break;
                 case Strophe.Status.CONNECTING:
                     this.setStatus("connecting");

@@ -103,4 +103,3 @@ var Xmpp;
     })();
     Xmpp.Servers = Servers;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.muc.servers.js.map

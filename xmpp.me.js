@@ -18,20 +18,18 @@ var Xmpp;
                 authenticating: "Authenticating..."
             };
             this.xpressive = xpressive;
-            this._this = this;
         }
         Me.prototype.init = function (connection) {
             Strophe.debug("init me plugin");
-            this._this.conn = connection;
-            this._this.conn.addHandler(this._onVersionIq.bind(this._this), Strophe.NS.VERSION, 'iq', 'get', null, null);
+            this.conn = connection;
+            connection.addHandler(this._onVersionIq.bind(this), Strophe.NS.VERSION, 'iq', 'get', null, null);
         };
         Me.prototype.statusChanged = function (status) {
-            var that = this._this;
             switch(status) {
                 case Strophe.Status.CONNECTED: {
                     this.jid = this.conn.jid;
                     this.setStatus("connected");
-                    that.conn.disco.addFeature(Strophe.NS.VERSION);
+                    this.xpressive.Disco.addFeature(Strophe.NS.VERSION);
                     break;
 
                 }
@@ -217,4 +215,3 @@ Strophe.addConnectionPlugin('me', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.me.js.map

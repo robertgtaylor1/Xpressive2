@@ -9,7 +9,6 @@ var Xmpp;
         };
         Chatstates.prototype.statusChanged = function (status) {
             if(status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-                this._connection.addHandler(this._notificationReceived.bind(this), Strophe.NS.CHATSTATES, "message");
                 this._connection.disco.addFeature(Strophe.NS.CHATSTATES);
             }
         };
@@ -18,22 +17,22 @@ var Xmpp;
                 xmlns: Strophe.NS.CHATSTATES
             }).up();
         };
-        Chatstates.prototype._notificationReceived = function (message) {
+        Chatstates.checkForNotification = function checkForNotification(message) {
             var composing = $(message).find('composing'), paused = $(message).find('paused'), active = $(message).find('active'), gone = $(message).find('gone'), jid = $(message).attr('from');
             if(composing.length > 0) {
-                $(document).trigger('composing.chatstates', jid);
+                return "composing";
             }
             if(paused.length > 0) {
-                $(document).trigger('paused.chatstates', jid);
+                return "paused";
             }
             if(active.length > 0) {
-                $(document).trigger('active.chatstates', jid);
+                return "active";
             }
             if(gone.length > 0) {
-                $(document).trigger('gone.chatstates', jid);
+                return "gone";
             }
-            return true;
-        };
+            return null;
+        }
         Chatstates.prototype.sendActive = function (jid, type) {
             this._sendNotification(jid, type, 'active');
         };
@@ -87,4 +86,3 @@ Strophe.addConnectionPlugin('chatstates', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.chatstates.js.map

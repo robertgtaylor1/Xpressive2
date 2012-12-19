@@ -44,7 +44,6 @@ module Xmpp {
         statusChanged(status: string) {
             if (status === Strophe.Status.CONNECTED) {
                 this._servers = new Xmpp.Servers(this._connection);
-                //_connection.addHandler(this.handlePresence.bind(this), Strophe.NS.MUC, "presence");
                 this._connection.addHandler(this.handlePresence.bind(this), Strophe.NS.MUC_USER, "presence");
 
             } else if (status === Strophe.Status.DISCONNECTED) {

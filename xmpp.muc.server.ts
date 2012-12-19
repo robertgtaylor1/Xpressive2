@@ -26,7 +26,7 @@ module Xmpp {
         private serverItemsResponse: any[];
 
         // Constructor
-        constructor (jid, conn) {
+        constructor(jid, conn) {
             this.serverJid = Strophe.getDomainFromJid(jid);
             this.connection = conn;
             this.serverInfoResponse = [];
@@ -79,13 +79,15 @@ module Xmpp {
         serverItems(iq) {
             Strophe.info("Server: got items for: " + this.serverJid);
 
-            var room;
+            var room: IRoom;
             this.serverItemsResponse = iq;
+            //this.connection.pause();
             $(iq).find('item').each((index, item) => {
                 room = new Room($(item).attr('jid'), $(item).attr('name'), this.connection)
                 room.getInfo();
                 this.rooms[room.jid] = room;
             });
+            //this.connection.resume();
 
             // notify user code of room changes
             $(document).trigger("rooms_changed", this);

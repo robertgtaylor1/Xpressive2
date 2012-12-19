@@ -28,6 +28,7 @@ $(document).bind('connect', function (ev, data) {
 
     var jid = data.myjid + "/" + data.myresource || "xprclient";
 
+    conn.reset();
     conn.connect(jid, data.password, function (status) {
         if (status === Strophe.Status.CONNECTED) {
             Xpressive.setSettings({ "myjid": data.myjid, "myresource": data.myresource });
@@ -57,6 +58,7 @@ $(document).bind('on_connected', function () {
     Xpressive.log("Connection established.");
 
     $('#disconnect').removeAttr('disabled');
+    Xpressive.startSession();
 });
 
 $(document).bind('on_disconnected', function () {

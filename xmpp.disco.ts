@@ -20,7 +20,7 @@ module Xmpp {
     // Class
     export class Disco implements IDisco {
         // Constructor
-        constructor () { }
+        constructor() { }
 
         // local callbacks
         // local properties
@@ -178,11 +178,15 @@ module Xmpp {
         }
 
         hasIdentities() {
-            return (this._identities.length === 0);
+            return (this._identities.length > 0);
         }
 
         getIdentity(index) {
-            return this._identities[index];
+            if (this._identities.length > 0) {
+                return this._identities[index];
+            } else {
+                return null;
+            }
         }
 
         getIdentities(): any[] {

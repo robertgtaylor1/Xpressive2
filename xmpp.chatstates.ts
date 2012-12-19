@@ -27,7 +27,7 @@ module Xmpp {
 
         statusChanged(status) {
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-                this._connection.addHandler(this._notificationReceived.bind(this), Strophe.NS.CHATSTATES, "message");
+                //this._connection.addHandler(this._notificationReceived.bind(this), Strophe.NS.CHATSTATES, "message");
                 this._connection.disco.addFeature(Strophe.NS.CHATSTATES);
             }
         }
@@ -38,7 +38,7 @@ module Xmpp {
             }).up();
         }
 
-        _notificationReceived(message) {
+        static checkForNotification(message) {
             var composing = $(message).find('composing'),
                 paused = $(message).find('paused'),
                 active = $(message).find('active'),
@@ -46,21 +46,21 @@ module Xmpp {
                 jid = $(message).attr('from');
 
             if (composing.length > 0) {
-                $(document).trigger('composing.chatstates', jid);
+                return "composing";
             }
 
             if (paused.length > 0) {
-                $(document).trigger('paused.chatstates', jid);
+                return "paused";
             }
 
             if (active.length > 0) {
-                $(document).trigger('active.chatstates', jid);
+                return "active";
             }
 
             if (gone.length > 0) {
-                $(document).trigger('gone.chatstates', jid);
+                return "gone";
             }
-            return true;
+            return null;
         }
 
         sendActive(jid, type) {

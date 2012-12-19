@@ -821,11 +821,10 @@ module Xmpp {
 
     export class x {
 
-        init(conn) {
+        init(connection) {
             Strophe.addNamespace('DATA', 'jabber:x:data');
-            if (conn.disco) {
-                return conn.disco.addFeature(Strophe.NS.DATA);
-            }
+            Xpressive.prototype.Disco.addFeature(Strophe.NS.DATA);
+            
         }
 
         parseFromResult(result) {

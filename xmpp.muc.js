@@ -321,4 +321,3 @@ Strophe.addConnectionPlugin('muc', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.muc.js.map

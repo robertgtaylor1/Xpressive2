@@ -14,4 +14,3 @@ var Xmpp;
     })();
     Xmpp.Util = Util;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.util.js.map

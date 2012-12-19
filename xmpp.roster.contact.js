@@ -174,10 +174,15 @@ var Xmpp;
     })();
     Xmpp.Contact = Contact;    
     var Contacts = (function () {
-        function Contacts(connection) {
+        function Contacts(connection, xpressive) {
             this.conn = connection;
+            this.xpressive = xpressive;
             this.list = [];
         }
+        Contacts.prototype.init = function () {
+            this.conn.addHandler(this.rosterChanged.bind(this), Strophe.NS.ROSTER, "iq", "set");
+            this.conn.addHandler(this.presenceChanged.bind(this), null, "presence");
+        };
         Contacts.prototype.rosterChanged = function (iq) {
             var item = $(iq).find('item');
             var jid = item.attr('jid');
@@ -216,6 +221,8 @@ var Xmpp;
             return true;
         };
         Contacts.prototype.presenceChanged = function (presence) {
+            var caps = null;
+            var capsNode;
             var from = $(presence).attr("from");
             var jid = Strophe.getBareJidFromJid(from);
             if(jid === this.conn.me.myJid()) {
@@ -261,16 +268,27 @@ var Xmpp;
                                     var stamp = $(presence).find("delay").attr("stamp");
                                     var time = stamp === undefined ? new Date() : new Date(stamp);
                                     contact.resources[resource] = {
-                                        show: $(presence).find("show").text() || "online",
-                                        status: $(presence).find("status").text(),
-                                        timestamp: time
+                                        "show": $(presence).find("show").text() || "online",
+                                        "status": $(presence).find("status").text(),
+                                        "timestamp": time,
+                                        "presence": presence
                                     };
+                                    var caps = $(presence).find("c");
+                                    if(caps.length > 0) {
+                                        var node = caps.attr("node");
+                                        var ver = caps.attr("ver");
+                                        capsNode = node + "#" + ver;
+                                        caps = this.xpressive.Caps.findCaps(capsNode);
+                                    }
                                 }
                             }
                         }
                     }
                 }
                 $(document).trigger("presence_changed", contact);
+            }
+            if(!caps) {
+                this.xpressive.Caps.getCaps(from, capsNode);
             }
             return true;
         };

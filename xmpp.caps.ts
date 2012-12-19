@@ -4,59 +4,110 @@ declare var $build: any;
 
 // Interface
 interface ICaps {
-    init(status: string): void;
-    removeFeature(): void;
+    removeFeature(feature: any): void;
     addFeature(feature: any): void;
     sendPres(): void;
-    generateVerificationString(): void;
-    createCapsNode(): void;
+    generateVerificationString(): string;
+    createCapsNode(): any;
+    findCaps(capsNode: string): any;
+    getCaps(jid: string, capsNode: string): void;
 }
 
 // Module
 module Xmpp {
 
     // Class
-    export class Caps {
-        // Constructor
-        constructor () {
-        }
+    export class Caps implements ICaps {
 
-        private conn: any;
+        private capsCache: any[];
+        private connection: any;
+
+        private capsReqQ: any[];
+
+        // Constructor
+        constructor() {
+            this.capsReqQ = [];
+        }
 
         init(connection) {
             Strophe.debug("init caps plugin");
 
-            this.conn = connection;
+            this.connection = connection;
+            this.capsCache = [];
             Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
 
-            if (this.conn.disco === void 0)
+            if (this.connection.disco === void 0)
                 throw new Error("disco plugin required!");
             if (b64_sha1 === void 0)
                 throw new Error("SHA-1 library required!");
 
-            this.conn.disco.addFeature(Strophe.NS.CAPS);
-            this.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
-            if (this.conn.disco.hasIdentities) {
-                return this.conn.disco.addIdentity("client", "pc", "XpressiveJS 0.1", "");
+            this.addFeature(Strophe.NS.CAPS);
+            this.addFeature(Strophe.NS.DISCO_INFO);
+            if (!this.connection.disco.hasIdentities()) {
+                this.connection.disco.addIdentity("client", "pc", "XpressiveJS 0.2", "");
             }
         }
 
+        statusChanged(status) {
+            if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                this.connection.addTimedHandler(5000, this.requestCaps.bind(this));
+            }
+        }
+
+        requestCaps(): bool {
+            if (this.capsReqQ.length > 0) {
+                var req = this.capsReqQ.pop();
+
+                Strophe.debug("Capabilities info requested");
+                var capsIq = $iq({
+                    "type": "get",
+                    "to": req.jid
+                }).c("query", {
+                    "node": req.capsNode,
+                    "xmlns": Strophe.NS.DISCO_INFO
+                });
+                this.connection.sendIQ(capsIq, this.addToCache.bind(this));
+            }
+            return true;
+        }
+
+        findCaps(capsNode: string): any {
+            return this.capsCache[capsNode];
+        }
+
+        getCaps(jid: string, capsNode: string) {
+            Strophe.debug("Capabilities info request queued");
+            this.capsReqQ.push({ "jid": jid, "capsNode": capsNode });
+        }
+
+        addToCache(iq) {
+            try {
+                Strophe.debug("Capabilities info recv'd.");
+                var info = $(iq).find("query");
+                var capsNode = info.attr("node");
+                this.capsCache[capsNode] = info;
+            } catch (ex) {
+                Strophe.error("Capabilities info handler errored.");
+            }
+            return false;
+        }
+
         addFeature(feature) {
-            return this.conn.disco.addFeature(feature);
+            return this.connection.disco.addFeature(feature);
         }
 
         removeFeature(feature) {
-            return this.conn.disco.removeFeature(feature);
+            return this.connection.disco.removeFeature(feature);
         }
 
         sendPres() {
-            return this.conn.send($pres().cnode(this.createCapsNode().tree()));
+            return this.connection.send($pres().cnode(this.createCapsNode().tree()));
         }
 
         createCapsNode() {
             var node;
-            if (this.conn.disco.hasIdentities) {
-                node = this.conn.disco.getIdentity(0).name || "";
+            if (this.connection.disco.hasIdentities()) {
+                node = this.connection.disco.getIdentity(0).name || "";
             } else {
                 node = "dummyId.name";
             }
@@ -82,13 +133,13 @@ module Xmpp {
             var S, features, i, id, ids, k, key, ns,
                  _i, _j, _k, _len, _len2, _len3, _ref, _ref2;
             ids = [];
-            _ref = this.conn.disco.identities;
+            _ref = this.connection.disco.identities;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                 i = _ref[_i];
                 ids.push(i);
             }
             features = [];
-            _ref2 = this.conn.disco.features;
+            _ref2 = this.connection.disco.features;
             for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
                 k = _ref2[_j];
                 features.push(k);
@@ -110,14 +161,14 @@ module Xmpp {
         }
     }
 
-/*
- * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
- * in FIPS PUB 180-1
- * Version 2.1a Copyright Paul Johnston 2000 - 2002.
- * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
- * Distributed under the BSD License
- * See http://pajhome.org.uk/crypt/md5 for details.
- */
+    /*
+     * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+     * in FIPS PUB 180-1
+     * Version 2.1a Copyright Paul Johnston 2000 - 2002.
+     * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+     * Distributed under the BSD License
+     * See http://pajhome.org.uk/crypt/md5 for details.
+     */
 
     /*
      * Configurable variables. You may need to tweak these to be compatible with
@@ -215,7 +266,7 @@ module Xmpp {
         var bkey = str2binb(key);
         if (bkey.length > 16) bkey = core_sha1(bkey, key.length * chrsz);
 
-      var ipad = Array(16), opad = Array(16);
+        var ipad = Array(16), opad = Array(16);
         for (var i = 0; i < 16; i++) {
             ipad[i] = bkey[i] ^ 0x36363636;
             opad[i] = bkey[i] ^ 0x5C5C5C5C;
@@ -296,18 +347,21 @@ module Xmpp {
         return str;
     }
 }
+// Local variables
+declare var Xpressive: IXpressive;
 
-Strophe.addConnectionPlugin('caps', (function () { 
+Strophe.addConnectionPlugin('caps', (function() {
     var _caps = new Xmpp.Caps();
 
     return {
         init: (connection) => _caps.init(connection),
-        removeFeature : (feature) => _caps.removeFeature(feature),
-		addFeature : (feature) => _caps.addFeature(feature),
-		sendPres : () => _caps.sendPres(),
-		generateVerificationString : () => _caps.generateVerificationString(),
-		createCapsNode : () => _caps.createCapsNode()
+        statusChanged: (status) => _caps.statusChanged(status),
+        removeFeature: (feature) => _caps.removeFeature(feature),
+        addFeature: (feature) => _caps.addFeature(feature),
+        sendPres: () => _caps.sendPres(),
+        generateVerificationString: () => _caps.generateVerificationString(),
+        createCapsNode: () => _caps.createCapsNode(),
+        findCaps: (capsNode) => _caps.findCaps(capsNode),
+        getCaps: (jid, capsNode) => _caps.getCaps(jid, capsNode)
     }
-
-
 } ()));

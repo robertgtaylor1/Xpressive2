@@ -1,6 +1,7 @@
 /// <reference path="xpressive.ts" />
 
 interface ISession {
+    sessionInit(): void;
     disconnect(): void;
 }
 
@@ -16,7 +17,7 @@ module Xmpp {
         discoItems: any[];
 
         // Constructor
-        constructor () {
+        constructor() {
             this.discoInfo = [];
             this.discoItems = [];
         }
@@ -76,17 +77,6 @@ module Xmpp {
         // called when connection status is changed
         statusChanged(status) {
             if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
-
-                // Get info
-                var discoInfo = $iq({
-                    type: 'get'
-                }).c('query', {
-                    xmlns: Strophe.NS.DISCO_INFO
-                });
-
-                Strophe.info("request info");
-
-                this.conn.sendIQ(discoInfo, this.onDiscoInfo.bind(this), this.onInfoError.bind(this));
                 //this.connection.addHandler(this.unhandledIq, null, 'iq', 'get', null, null);
             } else if (status === Strophe.Status.DISCONNECTED) {
                 this.discoInfo = [];
@@ -95,7 +85,21 @@ module Xmpp {
 
         disconnect() {
             this.conn.disconnect();
-        };
+        }
+
+        sessionInit() {
+
+            // Get info
+            var discoInfo = $iq({
+                type: 'get'
+            }).c('query', {
+                xmlns: Strophe.NS.DISCO_INFO
+            });
+
+            Strophe.info("request info");
+
+            this.conn.sendIQ(discoInfo, this.onDiscoInfo.bind(this), this.onInfoError.bind(this));
+        }
 
         unhandledIq(iq) {
             Strophe.info("Unhandled Iq");
@@ -110,6 +114,7 @@ Strophe.addConnectionPlugin('session', (function() {
     return {
         init: (connection) => _session.init(connection),
         statusChanged: (status) => _session.statusChanged(status),
+        sessionInit: () => _session.sessionInit(),
         disconnect: () => _session.disconnect(),
         unhandledIq: (iq) => _session.unhandledIq(iq)
     }

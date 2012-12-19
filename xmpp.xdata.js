@@ -819,11 +819,9 @@ var Xmpp;
     Xmpp.Form = Form;    
     var x = (function () {
         function x() { }
-        x.prototype.init = function (conn) {
+        x.prototype.init = function (connection) {
             Strophe.addNamespace('DATA', 'jabber:x:data');
-            if(conn.disco) {
-                return conn.disco.addFeature(Strophe.NS.DATA);
-            }
+            Xmpp.Xpressive.prototype.Disco.addFeature(Strophe.NS.DATA);
         };
         x.prototype.parseFromResult = function (result) {
             var _ref;
@@ -837,4 +835,3 @@ var Xmpp;
     })();
     Xmpp.x = x;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.xdata.js.map

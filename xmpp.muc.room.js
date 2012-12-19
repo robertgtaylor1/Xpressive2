@@ -291,4 +291,3 @@ var Xmpp;
     })();
     Xmpp.Room = Room;    
 })(Xmpp || (Xmpp = {}));
-//@ sourceMappingURL=xmpp.muc.room.js.map

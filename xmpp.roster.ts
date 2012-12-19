@@ -27,29 +27,29 @@ module Xmpp {
         // local variables
         private conn: any;
         private contacts: IContacts;
+        private xpressive: IXpressive;
 
-        constructor () {
+        constructor(Xpressive: IXpressive) {
             this.contacts = null;
+            this.xpressive = Xpressive;
         }
 
         init(connection) {
             Strophe.debug("init roster plugin");
 
             this.conn = connection;
-            this.contacts = new Xmpp.Contacts(connection);
+            this.contacts = new Xmpp.Contacts(connection, this.xpressive);
         }
 
         // called when connection status is changed
         statusChanged(status) {
-            try { 
+            try {
                 var roster_iq, contact;
 
                 if (status === Strophe.Status.CONNECTED) {
-                    this.contacts = new Xmpp.Contacts(this.conn);
+                    this.contacts = new Xmpp.Contacts(this.conn, this.xpressive);
 
-                    // set up handlers for updates
-                    this.conn.addHandler(this.contacts.rosterChanged.bind(this.contacts), Strophe.NS.ROSTER, "iq", "set");
-                    this.conn.addHandler(this.contacts.presenceChanged.bind(this.contacts), null, "presence");
+                    this.contacts.init();
 
                     // build and send initial roster query
                     roster_iq = $iq({
@@ -83,7 +83,7 @@ module Xmpp {
 
                     // notify user code
                     $(document).trigger('roster_changed', this.contacts);
-                } 
+                }
             } catch (ex) { console.log(ex); }
         }
 
@@ -103,7 +103,7 @@ module Xmpp {
             return contact;
         }
 
-        findContact(jid) : IContact {
+        findContact(jid): IContact {
             for (var listJid in this.contacts.list) {
                 if (listJid === jid)
                     return this.contacts.list[listJid];
@@ -154,7 +154,7 @@ module Xmpp {
         }
 
         // subscribe to a new contact's presence
-        subscribe(jid, name? , groups? ) {
+        subscribe(jid, name?, groups?) {
             try {
                 this.addContact(jid, name, groups);
 
@@ -185,7 +185,7 @@ declare var Xpressive: IXpressive;
 
 // example roster plugin
 Strophe.addConnectionPlugin('roster', (function() {
-    var _roster = new Xmpp.Roster();
+    var _roster = new Xmpp.Roster(Xpressive);
 
     return {
         init: (connection: any) => _roster.init(connection),

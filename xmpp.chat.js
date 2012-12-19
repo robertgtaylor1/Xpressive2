@@ -235,4 +235,3 @@ Strophe.addConnectionPlugin('chat', ((function () {
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.chat.js.map

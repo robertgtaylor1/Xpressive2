@@ -2,36 +2,79 @@ var Xmpp;
 (function (Xmpp) {
     var Caps = (function () {
         function Caps() {
+            this.capsReqQ = [];
         }
         Caps.prototype.init = function (connection) {
             Strophe.debug("init caps plugin");
-            this.conn = connection;
+            this.connection = connection;
+            this.capsCache = [];
             Strophe.addNamespace('CAPS', "http://jabber.org/protocol/caps");
-            if(this.conn.disco === void 0) {
+            if(this.connection.disco === void 0) {
                 throw new Error("disco plugin required!");
             }
             if(b64_sha1 === void 0) {
                 throw new Error("SHA-1 library required!");
             }
-            this.conn.disco.addFeature(Strophe.NS.CAPS);
-            this.conn.disco.addFeature(Strophe.NS.DISCO_INFO);
-            if(this.conn.disco.hasIdentities) {
-                return this.conn.disco.addIdentity("client", "pc", "XpressiveJS 0.1", "");
+            this.addFeature(Strophe.NS.CAPS);
+            this.addFeature(Strophe.NS.DISCO_INFO);
+            if(!this.connection.disco.hasIdentities()) {
+                this.connection.disco.addIdentity("client", "pc", "XpressiveJS 0.2", "");
             }
         };
+        Caps.prototype.statusChanged = function (status) {
+            if(status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
+                this.connection.addTimedHandler(5000, this.requestCaps.bind(this));
+            }
+        };
+        Caps.prototype.requestCaps = function () {
+            if(this.capsReqQ.length > 0) {
+                var req = this.capsReqQ.pop();
+                Strophe.debug("Capabilities info requested");
+                var capsIq = $iq({
+                    "type": "get",
+                    "to": req.jid
+                }).c("query", {
+                    "node": req.capsNode,
+                    "xmlns": Strophe.NS.DISCO_INFO
+                });
+                this.connection.sendIQ(capsIq, this.addToCache.bind(this));
+            }
+            return true;
+        };
+        Caps.prototype.findCaps = function (capsNode) {
+            return this.capsCache[capsNode];
+        };
+        Caps.prototype.getCaps = function (jid, capsNode) {
+            Strophe.debug("Capabilities info request queued");
+            this.capsReqQ.push({
+                "jid": jid,
+                "capsNode": capsNode
+            });
+        };
+        Caps.prototype.addToCache = function (iq) {
+            try  {
+                Strophe.debug("Capabilities info recv'd.");
+                var info = $(iq).find("query");
+                var capsNode = info.attr("node");
+                this.capsCache[capsNode] = info;
+            } catch (ex) {
+                Strophe.error("Capabilities info handler errored.");
+            }
+            return false;
+        };
         Caps.prototype.addFeature = function (feature) {
-            return this.conn.disco.addFeature(feature);
+            return this.connection.disco.addFeature(feature);
         };
         Caps.prototype.removeFeature = function (feature) {
-            return this.conn.disco.removeFeature(feature);
+            return this.connection.disco.removeFeature(feature);
         };
         Caps.prototype.sendPres = function () {
-            return this.conn.send($pres().cnode(this.createCapsNode().tree()));
+            return this.connection.send($pres().cnode(this.createCapsNode().tree()));
         };
         Caps.prototype.createCapsNode = function () {
             var node;
-            if(this.conn.disco.hasIdentities) {
-                node = this.conn.disco.getIdentity(0).name || "";
+            if(this.connection.disco.hasIdentities()) {
+                node = this.connection.disco.getIdentity(0).name || "";
             } else {
                 node = "dummyId.name";
             }
@@ -54,13 +97,13 @@ var Xmpp;
         Caps.prototype.generateVerificationString = function () {
             var S, features, i, id, ids, k, key, ns, _i, _j, _k, _len, _len2, _len3, _ref, _ref2;
             ids = [];
-            _ref = this.conn.disco.identities;
+            _ref = this.connection.disco.identities;
             for(_i = 0 , _len = _ref.length; _i < _len; _i++) {
                 i = _ref[_i];
                 ids.push(i);
             }
             features = [];
-            _ref2 = this.conn.disco.features;
+            _ref2 = this.connection.disco.features;
             for(_j = 0 , _len2 = _ref2.length; _j < _len2; _j++) {
                 k = _ref2[_j];
                 features.push(k);
@@ -225,6 +268,9 @@ Strophe.addConnectionPlugin('caps', ((function () {
         init: function (connection) {
             return _caps.init(connection);
         },
+        statusChanged: function (status) {
+            return _caps.statusChanged(status);
+        },
         removeFeature: function (feature) {
             return _caps.removeFeature(feature);
         },
@@ -239,7 +285,12 @@ Strophe.addConnectionPlugin('caps', ((function () {
         },
         createCapsNode: function () {
             return _caps.createCapsNode();
+        },
+        findCaps: function (capsNode) {
+            return _caps.findCaps(capsNode);
+        },
+        getCaps: function (jid, capsNode) {
+            return _caps.getCaps(jid, capsNode);
         }
     };
 })()));
-//@ sourceMappingURL=xmpp.caps.js.map
